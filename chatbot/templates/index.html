@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .chat-container {
+            width: 90%;
+            max-width: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        .chat-header {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .chat-messages {
+            max-height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+        }
+        .chat-messages p {
+            margin: 5px 0;
+        }
+        .user-input {
+            width: calc(100% - 20px);
+            margin: 0 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .send-button {
+            width: calc(100% - 20px);
+            margin: 10px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">ChatBot</div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- Chat messages will appear here -->
+        </div>
+        <input type="text" id="user-input" class="user-input" placeholder="Type a message...">
+        <button onclick="sendMessage()" class="send-button">Send</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function sendMessage() {
+            var userInput = $('#user-input').val();
+            $('#chat-messages').append('<p style="color: #333;"><strong>You:</strong> ' + userInput + '</p>');
+            $('#user-input').val('');
+
+            // Ajax request to send user input to the server (update 'url' and 'data' accordingly)
+            $.ajax({
+                url: '/ask',
+                type: 'POST',
+                data: {user_input: userInput},
+                success: function(response) {
+                    $('#chat-messages').append('<p style="color: #333;"><strong>ChatBOT:</strong> ' + response.response + '</p>');
+                    scrollChatToBottom();
+                }
+            });
+        }
+        $('#user-input').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault(); // 기본 엔터 행동 방지
+                sendMessage(); 
+            }
+        });
+        function scrollChatToBottom() {
+            var chatMessages = document.getElementById('chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
